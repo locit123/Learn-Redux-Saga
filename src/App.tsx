@@ -1,56 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
-
+import { Routes, Route } from 'react-router-dom';
+import { privateRouter, publicRouter } from './routers';
+import PrivateRouteCop from 'components/Common/PrivateRoute';
+import config from 'config';
+import NotFound from 'components/Common/NotFound';
+import AdminLayout from 'components/Layout';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div>
+      <Routes>
+        {/* PUBLIC ROUTE */}
+        {publicRouter.map((router, index) => {
+          let Comp = router.component;
+          return <Route key={index} path={router.path} element={<Comp />} />;
+        })}
+        {/* PRIVATE ROUTE */}
+        <Route element={<PrivateRouteCop />}>
+          {privateRouter.map((router, index) => {
+            const Page = router.component;
+            const Layout = AdminLayout;
+            return (
+              <Route
+                key={index}
+                path={router.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
+            );
+          })}
+        </Route>
+        {/* ERROR ROUTE */}
+        <Route path={config.Routers.notFoundPage} element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
